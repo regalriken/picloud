@@ -169,6 +169,14 @@ async function refreshData() {
             if (['mp4', 'webm', 'mov'].includes(ext)) html = `<video src="${url}" controls autoplay class="w-full max-h-full"></video>`;
             else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) html = `<img src="${url}" class="max-h-full w-auto">`;
             else if (['pdf', 'html', 'htm', 'txt'].includes(ext)) html = `<iframe src="${url}" class="w-full h-full border-0"></iframe>`;
+            else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
+        html = `
+            <div class="flex flex-col items-center justify-center p-10 w-full">
+                <div class="text-6xl mb-4">🎵</div>
+                <audio src="${url}" controls autoplay class="w-full"></audio>
+                <p class="mt-4 text-slate-400 text-sm">Now playing: ${relPath}</p>
+            </div>`;
+    }
             else html = `<div class="p-10 text-slate-400 font-black uppercase">No preview for .${ext}</div>`;
             body.innerHTML = html;
             modal.classList.remove('hidden');
@@ -176,6 +184,15 @@ async function refreshData() {
 
         function closePreview() { document.getElementById('previewModal').classList.add('hidden'); document.getElementById('modalBody').innerHTML = ""; }
         function copyClip() { const c = document.getElementById('clip'); c.select(); document.execCommand('copy'); }
+        async function copyClip() {
+    const c = document.getElementById('clip');
+    try {
+        await navigator.clipboard.writeText(c.value);
+        // Optional: Add a little "Copied!" toast notification here
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+    }
+}
         
         document.getElementById('clip').oninput = () => {
             const fd = new FormData();
