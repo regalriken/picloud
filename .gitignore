@@ -1,8 +1,10 @@
-# Ignore everything inside uploads
+# Ignore user data
 uploads/*
-# Keep the folder structure
 !uploads/.gitkeep
-# Ignore the local clipboard content
 clipboard.txt
-# Ignore OS junk
+clip_lock.txt
+
+# Ignore temp/system files
+*~
+#*#
 .DS_Store
