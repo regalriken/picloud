@@ -83,13 +83,28 @@
             return map[ext] || '📄';
         };
 
-        async function refreshData() {
-            const res = await fetch('api.php?fetch=1');
-            const data = await res.json();
-            if (!document.getElementById('clip').matches(':focus')) document.getElementById('clip').value = data.clipboard;
-            allFiles = data.files;
-            renderDiskFiles(allFiles);
-        }
+async function refreshData() {
+    const res = await fetch('api.php?fetch=1');
+    const data = await res.json();
+    
+    // Update clipboard only if not typing
+    if (!document.getElementById('clip').matches(':focus')) {
+        document.getElementById('clip').value = data.clipboard;
+    }
+    
+    allFiles = data.files;
+
+    // --- FIX STARTS HERE ---
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput.value.trim() !== "") {
+        // If there is text in the search box, re-run the filter instead of showing all
+        filterFiles();
+    } else {
+        // If search is empty, show everything like normal
+        renderDiskFiles(allFiles);
+    }
+    // --- FIX ENDS HERE ---
+}
 
         function filterFiles() {
             const query = document.getElementById('searchInput').value.toLowerCase();
