@@ -1,2 +1,7 @@
-uploads/
+# Ignore all files inside uploads
+uploads/*
+# But don't ignore the .gitkeep file
+!uploads/.gitkeep
+
+# Ignore the actual content of the clipboard
 clipboard.txt
