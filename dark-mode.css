@@ -1,0 +1,53 @@
+/* General body */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+/* Loader spinner */
+.loader {
+    border: 8px solid #2c2c2c;       /* Darker border */
+    border-top: 8px solid #bb86fc;    /* Accent color */
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+/* Log box */
+#log {
+    white-space: pre-wrap;
+    text-align: left;
+    max-width: 700px;
+    margin: 20px auto;
+    border: 1px solid #333;
+    padding: 15px;
+    background-color: #1e1e1e;
+    color: #f5f5f5;
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 300px;
+}
+
+/* Headings */
+h3 {
+    color: #bb86fc;
+}
+
+/* Links (if any) */
+a {
+    color: #03dac6;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
