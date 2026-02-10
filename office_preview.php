@@ -83,6 +83,7 @@ body { font-family: sans-serif; text-align: center; margin-top: 50px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 #log { white-space: pre-wrap; text-align: left; max-width: 600px; margin: 20px auto; border:1px solid #ccc; padding:10px; }
 </style>
+    <link rel="stylesheet" href="dark-mode.css">
 </head>
 <body>
 <h3>Generating preview, please wait...</h3>
