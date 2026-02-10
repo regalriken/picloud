@@ -1,119 +1,221 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PiCloud Pro Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        iframe, video { background: white; }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      iframe,
+      video {
+        background: white;
+      }
     </style>
-</head>
-<body class="bg-slate-100 min-h-screen font-sans text-slate-900" onload="refreshData()">
-
+  </head>
+  <body
+    class="bg-slate-100 min-h-screen font-sans text-slate-900"
+    onload="refreshData()"
+  >
     <div class="max-w-7xl mx-auto p-4 md:p-10 flex flex-col gap-6">
-        
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <h1 class="text-3xl font-black italic tracking-tighter text-indigo-600">PI-CLOUD</h1>
-            <div class="relative w-full md:w-96">
-                <input type="text" id="searchInput" oninput="filterFiles()" placeholder="Search files..." 
-                    class="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
-                <span class="absolute left-4 top-3 text-lg opacity-30">🔍</span>
+      <div
+        class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
+        <h1 class="text-3xl font-black italic tracking-tighter text-indigo-600">
+          PI-CLOUD
+        </h1>
+        <div class="relative w-full md:w-96">
+          <input
+            type="text"
+            id="searchInput"
+            oninput="filterFiles()"
+            placeholder="Search files..."
+            class="w-full pl-12 pr-4 py-3 rounded-2xl bg-white border border-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+          />
+          <span class="absolute left-4 top-3 text-lg opacity-30">🔍</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-4 order-1 lg:order-2">
+          <div
+            class="sticky top-10 bg-indigo-900 rounded-[2.5rem] shadow-2xl p-2 border border-indigo-800"
+          >
+            <div class="px-6 py-4 flex justify-between items-center">
+              <span
+                class="text-[10px] font-black text-indigo-400 uppercase tracking-widest"
+                >Global Clipboard</span
+              >
+              <button
+                onclick="copyClip()"
+                class="text-[9px] bg-indigo-700 text-white px-4 py-1.5 rounded-full uppercase font-bold hover:bg-indigo-600"
+              >
+                Copy
+              </button>
             </div>
+            <textarea
+              id="clip"
+              class="w-full h-48 lg:h-[450px] bg-transparent p-6 text-indigo-50 text-sm focus:outline-none resize-none font-medium leading-relaxed"
+              placeholder="Type notes..."
+            ></textarea>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <div class="lg:col-span-4 order-1 lg:order-2">
-                <div class="sticky top-10 bg-indigo-900 rounded-[2.5rem] shadow-2xl p-2 border border-indigo-800">
-                    <div class="px-6 py-4 flex justify-between items-center">
-                        <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Global Clipboard</span>
-                        <button onclick="copyClip()" class="text-[9px] bg-indigo-700 text-white px-4 py-1.5 rounded-full uppercase font-bold hover:bg-indigo-600">Copy</button>
-                    </div>
-                    <textarea id="clip" class="w-full h-48 lg:h-[450px] bg-transparent p-6 text-indigo-50 text-sm focus:outline-none resize-none font-medium leading-relaxed" placeholder="Type notes..."></textarea>
-                </div>
+        <div class="lg:col-span-8 order-2 lg:order-1 space-y-6">
+          <div
+            class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-200"
+          >
+            <div class="flex flex-wrap gap-3 mb-6">
+              <button
+                onclick="document.getElementById('fInput').click()"
+                class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest"
+              >
+                + Files
+              </button>
+              <button
+                onclick="document.getElementById('folderInput').click()"
+                class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest"
+              >
+                📁 Folders
+              </button>
+              <input
+                type="file"
+                id="fInput"
+                multiple
+                class="hidden"
+                onchange="handleFileSelect(event)"
+              />
+              <input
+                type="file"
+                id="folderInput"
+                webkitdirectory
+                directory
+                multiple
+                class="hidden"
+                onchange="handleFileSelect(event)"
+              />
             </div>
 
-            <div class="lg:col-span-8 order-2 lg:order-1 space-y-6">
-                
-                <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-200">
-                    <div class="flex flex-wrap gap-3 mb-6">
-                        <button onclick="document.getElementById('fInput').click()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest">+ Files</button>
-                        <button onclick="document.getElementById('folderInput').click()" class="bg-slate-800 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest">📁 Folders</button>
-                        <input type="file" id="fInput" multiple class="hidden" onchange="handleFileSelect(event)">
-                        <input type="file" id="folderInput" webkitdirectory directory multiple class="hidden" onchange="handleFileSelect(event)">
-                    </div>
+            <div
+              id="stagingArea"
+              class="space-y-2 mb-4 max-h-40 overflow-y-auto no-scrollbar"
+            ></div>
 
-                    <div id="stagingArea" class="space-y-2 mb-4 max-h-40 overflow-y-auto no-scrollbar"></div>
-                    
-                    <button id="upBtn" onclick="startUpload()" class="hidden w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-100">
-                        Start Upload
-                    </button>
+            <button
+              id="upBtn"
+              onclick="startUpload()"
+              class="hidden w-full bg-emerald-600 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-emerald-100"
+            >
+              Start Upload
+            </button>
 
-                    <div id="progressBox" class="hidden mt-4 bg-slate-100 rounded-full h-2 overflow-hidden">
-                        <div id="progressBar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="diskGrid"></div>
+            <div
+              id="progressBox"
+              class="hidden mt-4 bg-slate-100 rounded-full h-2 overflow-hidden"
+            >
+              <div
+                id="progressBar"
+                class="bg-indigo-600 h-full w-0 transition-all duration-300"
+              ></div>
             </div>
+          </div>
+
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            id="diskGrid"
+          ></div>
         </div>
+      </div>
     </div>
 
-    <div id="previewModal" class="hidden fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex flex-col p-4 md:p-10">
-        <div class="flex justify-between items-center mb-6 text-white">
-            <h2 id="modalTitle" class="text-lg font-bold truncate">Preview</h2>
-            <button onclick="closePreview()" class="bg-white/10 hover:bg-red-500 p-2 rounded-full transition-all">✕</button>
-        </div>
-        <div id="modalBody" class="flex-1 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center relative"></div>
+    <div
+      id="previewModal"
+      class="hidden fixed inset-0 z-50 bg-slate-900/90 backdrop-blur-sm flex flex-col p-4 md:p-10"
+    >
+      <div class="flex justify-between items-center mb-6 text-white">
+        <h2 id="modalTitle" class="text-lg font-bold truncate">Preview</h2>
+        <button
+          onclick="closePreview()"
+          class="bg-white/10 hover:bg-red-500 p-2 rounded-full transition-all"
+        >
+          ✕
+        </button>
+      </div>
+      <div
+        id="modalBody"
+        class="flex-1 bg-white rounded-3xl shadow-2xl overflow-hidden flex items-center justify-center relative"
+      ></div>
     </div>
 
     <script>
-        let allFiles = [];
-        let uploadQueue = [];
+      let allFiles = [];
+      let uploadQueue = [];
 
-        const getIcon = (ext) => {
-            const map = {
-                'mp4': '🎬', 'webm': '🎬', 'mov': '🎬',
-                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'webp': '🖼️',
-                'pdf': '📕', 'html': '🌐', 'htm': '🌐', 'php': '🐘',
-                'mp3': '🎵', 'wav': '🎵', 'txt': '📄', 'md': '📄'
-            };
-            return map[ext] || '📄';
+      const getIcon = (ext) => {
+        const map = {
+          mp4: "🎬",
+          webm: "🎬",
+          mov: "🎬",
+          jpg: "🖼️",
+          jpeg: "🖼️",
+          png: "🖼️",
+          gif: "🖼️",
+          webp: "🖼️",
+          pdf: "📕",
+          html: "🌐",
+          htm: "🌐",
+          php: "🐘",
+          mp3: "🎵",
+          wav: "🎵",
+          txt: "📄",
+          md: "📄",
         };
+        return map[ext] || "📄";
+      };
 
-async function refreshData() {
-    const res = await fetch('api.php?fetch=1');
-    const data = await res.json();
-    
-    // Update clipboard only if not typing
-    if (!document.getElementById('clip').matches(':focus')) {
-        document.getElementById('clip').value = data.clipboard;
-    }
-    
-    allFiles = data.files;
+      async function refreshData() {
+        const res = await fetch("api.php?fetch=1");
+        const data = await res.json();
 
-    // --- FIX STARTS HERE ---
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput.value.trim() !== "") {
-        // If there is text in the search box, re-run the filter instead of showing all
-        filterFiles();
-    } else {
-        // If search is empty, show everything like normal
-        renderDiskFiles(allFiles);
-    }
-    // --- FIX ENDS HERE ---
-}
-
-        function filterFiles() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            renderDiskFiles(allFiles.filter(f => f.name.toLowerCase().includes(query) || f.path.toLowerCase().includes(query)));
+        // Update clipboard only if not typing
+        if (!document.getElementById("clip").matches(":focus")) {
+          document.getElementById("clip").value = data.clipboard;
         }
 
-        function renderDiskFiles(files) {
-            const grid = document.getElementById('diskGrid');
-            grid.innerHTML = files.map(f => `
+        allFiles = data.files;
+
+        // --- FIX STARTS HERE ---
+        const searchInput = document.getElementById("searchInput");
+        if (searchInput.value.trim() !== "") {
+          // If there is text in the search box, re-run the filter instead of showing all
+          filterFiles();
+        } else {
+          // If search is empty, show everything like normal
+          renderDiskFiles(allFiles);
+        }
+        // --- FIX ENDS HERE ---
+      }
+
+      function filterFiles() {
+        const query = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        renderDiskFiles(
+          allFiles.filter(
+            (f) =>
+              f.name.toLowerCase().includes(query) ||
+              f.path.toLowerCase().includes(query),
+          ),
+        );
+      }
+
+      function renderDiskFiles(files) {
+        const grid = document.getElementById("diskGrid");
+        grid.innerHTML = files
+          .map(
+            (f) => `
                 <div class="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center hover:border-indigo-400 transition-all">
                     <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mr-4 text-xl shadow-inner">${getIcon(f.ext)}</div>
                     <div class="flex-1 min-w-0">
@@ -125,82 +227,121 @@ async function refreshData() {
                         </div>
                     </div>
                 </div>
-            `).join('');
-        }
+            `,
+          )
+          .join("");
+      }
 
-        function handleFileSelect(e) {
-            uploadQueue = [...uploadQueue, ...Array.from(e.target.files)];
-            renderStaging();
-        }
+      function handleFileSelect(e) {
+        uploadQueue = [...uploadQueue, ...Array.from(e.target.files)];
+        renderStaging();
+      }
 
-        function renderStaging() {
-            const area = document.getElementById('stagingArea');
-            const btn = document.getElementById('upBtn');
-            if (uploadQueue.length === 0) { area.innerHTML = ''; btn.classList.add('hidden'); return; }
-            btn.classList.remove('hidden');
-            area.innerHTML = uploadQueue.map((f, i) => `
+      function renderStaging() {
+        const area = document.getElementById("stagingArea");
+        const btn = document.getElementById("upBtn");
+        if (uploadQueue.length === 0) {
+          area.innerHTML = "";
+          btn.classList.add("hidden");
+          return;
+        }
+        btn.classList.remove("hidden");
+        area.innerHTML = uploadQueue
+          .map(
+            (f, i) => `
                 <div class="flex items-center justify-between bg-white p-2 px-4 rounded-xl border border-slate-100">
                     <span class="text-[9px] font-bold text-slate-500 truncate max-w-[250px]">${f.webkitRelativePath || f.name}</span>
                     <button onclick="uploadQueue.splice(${i}, 1); renderStaging();" class="text-red-400 font-bold">✕</button>
                 </div>
-            `).join('');
-        }
+            `,
+          )
+          .join("");
+      }
 
-        async function startUpload() {
-            const fd = new FormData();
-            uploadQueue.forEach(f => {
-                fd.append('fileToUpload[]', f);
-                fd.append('paths[]', f.webkitRelativePath || f.name);
-            });
-            document.getElementById('progressBox').classList.remove('hidden');
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', 'api.php', true);
-            xhr.upload.onprogress = (e) => { document.getElementById('progressBar').style.width = Math.round((e.loaded/e.total)*100) + '%'; };
-            xhr.onload = () => { uploadQueue = []; renderStaging(); refreshData(); document.getElementById('progressBox').classList.add('hidden'); };
-            xhr.send(fd);
-        }
+      async function startUpload() {
+        const fd = new FormData();
+        uploadQueue.forEach((f) => {
+          fd.append("fileToUpload[]", f);
+          fd.append("paths[]", f.webkitRelativePath || f.name);
+        });
+        document.getElementById("progressBox").classList.remove("hidden");
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "api.php", true);
+        xhr.upload.onprogress = (e) => {
+          document.getElementById("progressBar").style.width =
+            Math.round((e.loaded / e.total) * 100) + "%";
+        };
+        xhr.onload = () => {
+          uploadQueue = [];
+          renderStaging();
+          refreshData();
+          document.getElementById("progressBox").classList.add("hidden");
+        };
+        xhr.send(fd);
+      }
 
-        function openPreview(relPath, ext) {
-            const modal = document.getElementById('previewModal');
-            const body = document.getElementById('modalBody');
-            const url = `uploads/${encodeURIComponent(relPath)}`;
-            document.getElementById('modalTitle').innerText = relPath;
-            let html = "";
-            if (['mp4', 'webm', 'mov'].includes(ext)) html = `<video src="${url}" controls autoplay class="w-full max-h-full"></video>`;
-            else if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) html = `<img src="${url}" class="max-h-full w-auto">`;
-            else if (['pdf', 'html', 'htm', 'txt'].includes(ext)) html = `<iframe src="${url}" class="w-full h-full border-0"></iframe>`;
-            else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) {
-        html = `
+      function openPreview(relPath, ext) {
+        const modal = document.getElementById("previewModal");
+        const body = document.getElementById("modalBody");
+        const url = `uploads/${encodeURIComponent(relPath)}`;
+        document.getElementById("modalTitle").innerText = relPath;
+        let html = "";
+        if (["mp4", "webm", "mov"].includes(ext))
+          html = `<video src="${url}" controls autoplay class="w-full max-h-full"></video>`;
+        else if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext))
+          html = `<img src="${url}" class="max-h-full w-auto">`;
+        else if (["pdf", "html", "htm", "txt"].includes(ext))
+          html = `<iframe src="${url}" class="w-full h-full border-0"></iframe>`;
+        else if (["mp3", "wav", "ogg", "m4a"].includes(ext)) {
+          html = `
             <div class="flex flex-col items-center justify-center p-10 w-full">
                 <div class="text-6xl mb-4">🎵</div>
                 <audio src="${url}" controls autoplay class="w-full"></audio>
                 <p class="mt-4 text-slate-400 text-sm">Now playing: ${relPath}</p>
             </div>`;
-    }
-            else html = `<div class="p-10 text-slate-400 font-black uppercase">No preview for .${ext}</div>`;
-            body.innerHTML = html;
-            modal.classList.remove('hidden');
-        }
+        } else if (
+          ["docx", "xlsx", "pptx", "odt", "ods", "odp", "csv", "rtf"].includes(
+            ext,
+          )
+        ) {
+          html = `
+        <iframe 
+            src="office_preview.php?file=${encodeURIComponent(relPath)}"
+            class="w-full h-full border-0 bg-white">
+        </iframe>
+    `;
+        } else
+          html = `<div class="p-10 text-slate-400 font-black uppercase">No preview for .${ext}</div>`;
+        body.innerHTML = html;
+        modal.classList.remove("hidden");
+      }
 
-        function closePreview() { document.getElementById('previewModal').classList.add('hidden'); document.getElementById('modalBody').innerHTML = ""; }
-        function copyClip() { const c = document.getElementById('clip'); c.select(); document.execCommand('copy'); }
-        async function copyClip() {
-    const c = document.getElementById('clip');
-    try {
-        await navigator.clipboard.writeText(c.value);
-        // Optional: Add a little "Copied!" toast notification here
-    } catch (err) {
-        console.error('Failed to copy: ', err);
-    }
-}
-        
-        document.getElementById('clip').oninput = () => {
-            const fd = new FormData();
-            fd.append('save_clip', '1');
-            fd.append('clipboard_text', document.getElementById('clip').value);
-            fetch('api.php', { method: 'POST', body: fd });
-        };
-        setInterval(refreshData, 5000);
+      function closePreview() {
+        document.getElementById("previewModal").classList.add("hidden");
+        document.getElementById("modalBody").innerHTML = "";
+      }
+      function copyClip() {
+        const c = document.getElementById("clip");
+        c.select();
+        document.execCommand("copy");
+      }
+      async function copyClip() {
+        const c = document.getElementById("clip");
+        try {
+          await navigator.clipboard.writeText(c.value);
+          // Optional: Add a little "Copied!" toast notification here
+        } catch (err) {
+          console.error("Failed to copy: ", err);
+        }
+      }
+
+      document.getElementById("clip").oninput = () => {
+        const fd = new FormData();
+        fd.append("save_clip", "1");
+        fd.append("clipboard_text", document.getElementById("clip").value);
+        fetch("api.php", { method: "POST", body: fd });
+      };
+      setInterval(refreshData, 5000);
     </script>
-</body>
+  </body>
 </html>
